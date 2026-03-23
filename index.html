@@ -57,6 +57,12 @@ FROM sales_data_flat
 WHERE customer_name = 'Southern Retail Group'
 GROUP BY customer_name;</pre>
 
+<pre>SELECT p.product_category, SUM(s.revenue) AS total_revenue
+FROM sales s
+JOIN products p
+  ON s.product_id = p.product_id
+GROUP BY p.product_category
+ORDER BY total_revenue DESC;</pre>
 </div>
 
 <script>
