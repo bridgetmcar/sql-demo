@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SQL Playground - Finance Demo</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 24px;
+      background: #f7f7f9;
+      color: #222;
+    }
+    h1 {
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      margin-top: 0;
+      color: #555;
+    }
+    .box {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    textarea {
+      width: 100%;
+      height: 220px;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 14px;
+      padding: 12px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      resize: vertical;
+      line-height: 1.4;
+    }
+    button {
+      padding: 10px 16px;
+      margin-right: 8px;
+      margin-top: 12px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #1f6feb;
+      color: white;
+      font-size: 14px;
+    }
+    button.secondary {
+      background: #666;
+    }
+    .small {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.5;
+    }
+    #status {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #444;
+      min-height: 20px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 12px;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+      font-size: 14px;
+      vertical-align: top;
+    }
+    th {
+      background: #f0f2f5;
+    }
+    code {
+      background: #f2f2f2;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .query-list code {
+      display: block;
+      white-space: pre-wrap;
+      padding: 10px;
+      margin: 8px 0;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>SQL Playground - Finance Demo</h1>
+  <p class="subtitle">Run beginner-friendly SQL against a preloaded finance dataset.</p>
+
+  <div class="box">
+    <p><strong>How to use this:</strong></p>
+    <p class="small">
+      1. Click <strong>Run Query</strong> to run the starter query.<br>
+      2. Change the date range or customer name and run it again.<br>
+      3. Try one of the example queries below.<br>
+      4. This playground is read-only for learners.
+    </p>
+    <p class="small">
+      Available tables: <code>sales</code>, <code>customers</code>, <code>products</code>, <code>calendar</code>, <code>standard_cost</code><br>
+      Beginner-friendly view: <code>sales_data_flat</code>
+    </p>
+  </div>
+
+  <div class="box">
+    <label for="query"><strong>SQL Editor</strong></label>
+    <textarea id="query">SELECT *
+FROM sales_data_flat
+LIMIT 10;</textarea>
+    <br />
+    <button id="runBtn">Run Query</button>
+    <button id="resetBtn" class="secondary">Reset Database</button>
+    <div id="status">Loading database...</div>
+  </div>
+
+  <div class="box">
+    <strong>Starter queries</strong>
+    <div class="query-list">
+      <code>SELECT * FROM sales_data_flat LIMIT 10;</code>
+
+      <code>SELECT
+    customer_name,
+    SUM(revenue) AS total_revenue
+FROM sales_data_flat
+WHERE sale_date BETWEEN '2024-01-01' AND '2024-01-31'
+GROUP BY customer_name
+ORDER BY total_revenue DESC;</code>
+
+      <code>SELECT
+    customer_name,
+    SUM(revenue) AS total_revenue
+FROM sales_data_flat
+WHERE sale_date BETWEEN '2024-01-01' AND '2024-01-31'
+  AND customer_name = 'Southern Retail Group'
+GROUP BY customer_name;</code>
+
+      <code>SELECT
+    p.product_category,
+    SUM(s.revenue) AS total_revenue
+FROM sales s
+JOIN products p
+  ON s.product_id = p.product_id
+GROUP BY p.product_category
+ORDER BY total_revenue DESC;</code>
+    </div>
+  </div>
+
+  <div class="box">
+    <strong>Results</strong>
+    <div id="results"></div>
+  </div>
+
+  <script>
+    let db;
+
+    const statusEl = document.getElementById('status');
+    const queryEl = document.getElementById('query');
+    const resultsEl = document.getElementById('results');
+
+    function isReadOnlyQuery(sql) {
+      const cleaned = sql.trim().toUpperCase();
+      if (!cleaned) return false;
+
+      const blockedWords = [
+        'INSERT', 'UPDATE', 'DELETE', 'DROP', 'ALTER',
+        'CREATE', 'REPLACE', 'ATTACH', 'DETACH', 'VACUUM',
+        'TRUNCATE'
+      ];
+
+      return !blockedWords.some(word => cleaned.includes(word));
+    }
+
+    function renderTable(columns, values) {
+      if (!values || values.length === 0) {
+        resultsEl.innerHTML = '<p>No rows returned.</p>';
+        return;
+      }
+
+      let html = '<table><thead><tr>';
+      columns.forEach(col => {
+        html += `<th>${col}</th>`;
+      });
+      html += '</tr></thead><tbody>';
+
+      values.forEach(row => {
+        html += '<tr>';
+        row.forEach(cell => {
+          html += `<td>${cell === null ? '' : cell}</td>`;
+        });
+        html += '</tr>';
+      });
+
+      html += '</tbody></table>';
+      resultsEl.innerHTML = html;
+    }
+
+    async function loadDatabase() {
+      statusEl.textContent = 'Loading database...';
+      resultsEl.innerHTML = '';
+
+      const SQL = await initSqlJs({
+        locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/${file}`
+      });
+
+      db = new SQL.Database();
+
+      const response = await fetch('data.sql');
+      if (!response.ok) {
+        throw new Error('Could not load data.sql');
+      }
+      const seedSql = await response.text();
+      db.run(seedSql);
+
+      statusEl.textContent = 'Database loaded. Ready to run queries.';
+    }
+
+    document.getElementById('runBtn').addEventListener('click', () => {
+      const sql = queryEl.value;
+
+      if (!isReadOnlyQuery(sql)) {
+        statusEl.textContent = 'Only read-only queries are allowed in this demo.';
+        return;
+      }
+
+      try {
+        const result = db.exec(sql);
+        if (!result || result.length === 0) {
+          resultsEl.innerHTML = '<p>Query ran successfully. No result set returned.</p>';
+        } else {
+          renderTable(result[0].columns, result[0].values);
+        }
+        statusEl.textContent = 'Query ran successfully.';
+      } catch (err) {
+        statusEl.textContent = 'SQL error: ' + err.message;
+      }
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', async () => {
+      try {
+        await loadDatabase();
+        queryEl.value = `SELECT *\nFROM sales_data_flat\nLIMIT 10;`;
+      } catch (err) {
+        statusEl.textContent = 'Reset failed: ' + err.message;
+      }
+    });
+
+    loadDatabase().catch(err => {
+      statusEl.textContent = 'Database failed to load: ' + err.message;
+    });
+  </script>
+</body>
+</html>
