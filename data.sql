@@ -81,23 +81,23 @@ INSERT INTO products (product_id, product_name, product_category, brand, list_pr
 (10, 'Olive Oil 500ml',           'Pantry',    'Meditera',  13.80);
 
 INSERT INTO standard_cost (product_id, effective_from, standard_cost) VALUES
-(1, '2024-01-01', 10.20),
-(2, '2024-01-01', 13.60),
-(3, '2024-01-01',  3.90),
-(4, '2024-01-01',  7.80),
-(5, '2024-01-01',  6.10),
-(6, '2024-01-01',  5.40),
-(7, '2024-01-01',  2.20),
-(8, '2024-01-01', 12.50),
-(9, '2024-01-01',  2.90),
-(10,'2024-01-01',  8.10);
+(1, '2025-01-01', 10.20),
+(2, '2025-01-01', 13.60),
+(3, '2025-01-01',  3.90),
+(4, '2025-01-01',  7.80),
+(5, '2025-01-01',  6.10),
+(6, '2025-01-01',  5.40),
+(7, '2025-01-01',  2.20),
+(8, '2025-01-01', 12.50),
+(9, '2025-01-01',  2.90),
+(10,'2025-01-01',  8.10);
 
 WITH RECURSIVE dates(d) AS (
-    SELECT date('2024-01-01')
+    SELECT date('2025-01-01')
     UNION ALL
     SELECT date(d, '+1 day')
     FROM dates
-    WHERE d < date('2024-12-31')
+    WHERE d < date('2025-12-31')
 )
 INSERT INTO calendar (calendar_date, calendar_year, calendar_month, month_name, quarter_label, financial_year, financial_period)
 SELECT
@@ -142,12 +142,12 @@ FROM dates;
 WITH RECURSIVE seq(n) AS (
     SELECT 1
     UNION ALL
-    SELECT n + 1 FROM seq WHERE n < 240
+    SELECT n + 1 FROM seq WHERE n < 1000
 )
 INSERT INTO sales (sale_id, sale_date, customer_id, product_id, units, revenue, discount)
 SELECT
     n AS sale_id,
-    date('2024-01-01', '+' || ((n * 3) % 366) || ' days') AS sale_date,
+    date('2025-01-01', '+' || ((n * 3) % 365) || ' days') AS sale_date,
     ((n - 1) % 12) + 1 AS customer_id,
     ((n * 7 - 1) % 10) + 1 AS product_id,
     2 + ((n * 5) % 10) AS units,
@@ -156,8 +156,8 @@ SELECT
             (2 + ((n * 5) % 10)) *
             (SELECT list_price FROM products WHERE product_id = (((n * 7 - 1) % 10) + 1)) *
             (CASE 
-                WHEN CAST(strftime('%m', date('2024-01-01', '+' || ((n * 3) % 366) || ' days')) AS INTEGER) IN (11,12) THEN 1.14
-                WHEN CAST(strftime('%m', date('2024-01-01', '+' || ((n * 3) % 366) || ' days')) AS INTEGER) IN (6,7,8) THEN 0.94
+                WHEN CAST(strftime('%m', date('2025-01-01', '+' || ((n * 3) % 365) || ' days')) AS INTEGER) IN (11,12) THEN 1.14
+                WHEN CAST(strftime('%m', date('2025-01-01', '+' || ((n * 3) % 365) || ' days')) AS INTEGER) IN (6,7,8) THEN 0.94
                 ELSE 1.00
              END) *
             (CASE (((n - 1) % 12) + 1)
