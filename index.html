@@ -145,7 +145,7 @@ LIMIT 10;</textarea>
     customer_name,
     SUM(revenue) AS total_revenue
 FROM sales_data_flat
-WHERE sale_date BETWEEN '2024-01-01' AND '2024-01-31'
+WHERE sale_date BETWEEN '2025-01-01' AND '2025-01-31'
 GROUP BY customer_name
 ORDER BY total_revenue DESC;</pre>
 
@@ -153,7 +153,7 @@ ORDER BY total_revenue DESC;</pre>
     customer_name,
     SUM(revenue) AS total_revenue
 FROM sales_data_flat
-WHERE sale_date BETWEEN '2024-01-01' AND '2024-01-31'
+WHERE sale_date BETWEEN '2025-01-01' AND '2025-01-31'
   AND customer_name = 'Southern Retail Group'
 GROUP BY customer_name;</pre>
 
