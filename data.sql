@@ -2,7 +2,6 @@ PRAGMA foreign_keys = ON;
 
 DROP VIEW IF EXISTS sales_data_flat;
 DROP TABLE IF EXISTS sales;
-DROP TABLE IF EXISTS standard_cost;
 DROP TABLE IF EXISTS calendar;
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS customers;
@@ -94,11 +93,21 @@ date('2025-01-01','+'||(n%365)||' days'),
 ((n-1)%5)+1,
 5 + (n%10),
 ROUND((5 + (n%10)) * (10 + (n%5)*2),2),
-0
+CASE WHEN n % 5 = 0 THEN 0.1 WHEN n % 3 = 0 THEN 0.05 ELSE 0 END
 FROM seq;
 
 CREATE VIEW sales_data_flat AS
-SELECT s.sale_id, s.sale_date, c.customer_name, p.product_name, s.revenue
+SELECT 
+    s.sale_id,
+    s.sale_date,
+    c.customer_name,
+    c.region,
+    c.customer_segment,
+    p.product_name,
+    p.product_category,
+    s.units,
+    s.revenue,
+    s.discount
 FROM sales s
-JOIN customers c ON s.customer_id=c.customer_id
-JOIN products p ON s.product_id=p.product_id;
+JOIN customers c ON s.customer_id = c.customer_id
+JOIN products p ON s.product_id = p.product_id;
