@@ -66,7 +66,11 @@ INSERT INTO customers (customer_id, customer_name, channel, region, customer_seg
 (9,  'Corner Pantry Group',     'Retail',      'SA',  'Independent Retail'),
 (10, 'FreshPath Distributors',  'Wholesale',   'WA',  'Wholesale'),
 (11, 'Sunrise Cafes',           'Hospitality', 'QLD', 'Hospitality'),
-(12, 'Central Buying Office',   'Retail',      'VIC', 'Key Accounts');
+(12, 'Central Buying Office',   'Retail',      'VIC', 'Key Accounts'),
+(13, 'Urban Corner Stores',     'Retail',      'NSW', 'Independent Retail'),
+(14, 'Budget Bites Cafe',       'Hospitality', 'VIC', 'Hospitality'),
+(15, 'QuickStop Convenience',   'Retail',      'QLD', 'Independent Retail'),
+(16, 'Regional Wholesale Hub',  'Wholesale',   'WA',  'Wholesale');
 
 INSERT INTO products (product_id, product_name, product_category, brand, list_price) VALUES
 (1,  'Sparkling Water 12 Pack',   'Beverages', 'BluePeak', 18.50),
