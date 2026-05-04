@@ -48,6 +48,7 @@ CREATE TABLE sales (
     product_id INTEGER NOT NULL,
     units INTEGER NOT NULL,
     revenue NUMERIC NOT NULL,
+    cost NUMERIC NOT NULL,
     discount NUMERIC NOT NULL,
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
     FOREIGN KEY (product_id) REFERENCES products(product_id),
@@ -148,7 +149,7 @@ WITH RECURSIVE seq(n) AS (
     UNION ALL
     SELECT n + 1 FROM seq WHERE n < 1000
 )
-INSERT INTO sales (sale_id, sale_date, customer_id, product_id, units, revenue, discount)
+INSERT INTO sales (sale_id, sale_date, customer_id, product_id, units, revenue, cost, discount)
 SELECT
     n AS sale_id,
     date('2025-01-01', '+' || ((n * 3) % 365) || ' days') AS sale_date,
@@ -186,6 +187,11 @@ SELECT
         ),
         2
     ) AS revenue,
+    ROUND(
+        (2 + ((n * 5) % 10)) *
+        (SELECT standard_cost FROM standard_cost WHERE product_id = (((n * 7 - 1) % 10) + 1)),
+        2
+    ) AS cost,
     CASE 
         WHEN n % 9 = 0 THEN 0.10
         WHEN n % 4 = 0 THEN 0.05
@@ -204,6 +210,7 @@ SELECT
     p.product_category,
     s.units,
     s.revenue,
+    s.cost,
     s.discount
 FROM sales s
 JOIN customers c
