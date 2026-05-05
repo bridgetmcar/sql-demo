@@ -56,22 +56,22 @@ CREATE TABLE sales (
 );
 
 INSERT INTO customers (customer_id, customer_name, channel, region, customer_segment) VALUES
-(1,  'Southern Retail Group',   'Retail',      'NSW', 'Key Accounts'),
-(2,  'Metro Food Distributors', 'Wholesale',   'NSW', 'Wholesale'),
-(3,  'Eastside Hospitality',    'Hospitality', 'VIC', 'Hospitality'),
-(4,  'Greenline Wholesale',     'Wholesale',   'QLD', 'Wholesale'),
-(5,  'Apex Convenience',        'Retail',      'QLD', 'Independent Retail'),
-(6,  'Harbour Market Stores',   'Retail',      'NSW', 'Independent Retail'),
-(7,  'Pacific Dining Co',       'Hospitality', 'WA',  'Hospitality'),
-(8,  'Northern Grocers',        'Retail',      'VIC', 'Key Accounts'),
-(9,  'Corner Pantry Group',     'Retail',      'SA',  'Independent Retail'),
-(10, 'FreshPath Distributors',  'Wholesale',   'WA',  'Wholesale'),
-(11, 'Sunrise Cafes',           'Hospitality', 'QLD', 'Hospitality'),
-(12, 'Central Buying Office',   'Retail',      'VIC', 'Key Accounts'),
-(13, 'Urban Corner Stores',     'Retail',      'NSW', 'Independent Retail'),
-(14, 'Budget Bites Cafe',       'Hospitality', 'VIC', 'Hospitality'),
-(15, 'QuickStop Convenience',   'Retail',      'QLD', 'Independent Retail'),
-(16, 'Regional Wholesale Hub',  'Wholesale',   'WA',  'Wholesale');
+(1,  'Southern Retail Group',   'Retail',      'East', 'Key Accounts'),
+(2,  'Metro Food Distributors', 'Wholesale',   'East', 'Wholesale'),
+(3,  'Eastside Hospitality',    'Hospitality', 'South', 'Hospitality'),
+(4,  'Greenline Wholesale',     'Wholesale',   'North', 'Wholesale'),
+(5,  'Apex Convenience',        'Retail',      'North', 'Independent Retail'),
+(6,  'Harbour Market Stores',   'Retail',      'East', 'Independent Retail'),
+(7,  'Pacific Dining Co',       'Hospitality', 'West',  'Hospitality'),
+(8,  'Northern Grocers',        'Retail',      'South', 'Key Accounts'),
+(9,  'Corner Pantry Group',     'Retail',      'West',  'Independent Retail'),
+(10, 'FreshPath Distributors',  'Wholesale',   'West',  'Wholesale'),
+(11, 'Sunrise Cafes',           'Hospitality', 'North', 'Hospitality'),
+(12, 'Central Buying Office',   'Retail',      'South', 'Key Accounts'),
+(13, 'Urban Corner Stores',     'Retail',      'East', 'Independent Retail'),
+(14, 'Budget Bites Cafe',       'Hospitality', 'South', 'Hospitality'),
+(15, 'QuickStop Convenience',   'Retail',      'North', 'Independent Retail'),
+(16, 'Regional Wholesale Hub',  'Wholesale',   'West',  'Wholesale');
 
 INSERT INTO products (product_id, product_name, product_category, brand, list_price) VALUES
 (1,  'Sparkling Water 12 Pack',   'Beverages', 'BluePeak', 18.50),
